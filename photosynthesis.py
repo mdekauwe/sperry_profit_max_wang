@@ -43,50 +43,43 @@ def GetPhotosyntheticVcmax(vcmax25, tem):
 
 def get_a(v25,j25,gamma,ci,tem,par):
     adjust = 0.98
-    tar_p = ci
-    r_day  = v25 * 0.01 *  2.0**(0.1*(tem-25.0)) / (1.0+exp(1.3*(tem-55.0)))
+    r_day  = calc_rday(v25, tem)
     vmax = GetPhotosyntheticVcmax(v25,tem)
     jmax = GetPhotosyntheticJmax(j25,tem)
     j = GetPhotosyntheticJ(jmax,par)
     kc = 41.01637 * 2.1**(0.1*(tem-25.0))
     ko = 28201.92 * 1.2**(0.1*(tem-25.0))
     km = kc * (1.0+21000.0/ko)
-    aj = j * (tar_p-gamma) / (4.0*(tar_p+2*gamma))
-    ac = vmax * (tar_p-gamma) / (tar_p+km)
+    aj = j * (ci-gamma) / (4.0*(ci+2*gamma))
+    ac = vmax * (ci-gamma) / (ci+km)
     af = (aj + ac - sqrt((aj+ac)**2.0 - 4*adjust*aj*ac) ) / adjust * 0.5
     af = af - r_day
     return af
 
+def calc_rday(v25, tem):
+    return v25 * 0.01 * 2.0**(0.1*(tem-25.0)) / (1.0+exp(1.3*(tem-55.0)))
+
 # get ci and Anet from gc and ca
 def get_a_ci(v25,j25,gamma,gc,ca,tem,par):
-    tar_p  = 0.0
+    tar_ci  = 0.0
     tar_a  = 0.0
-    max_p  = ca
-    min_p  = gamma
+    max_ci  = ca
+    min_ci  = gamma
     adjust = 0.98
-    r_day  = v25 * 0.01 *  2.0**(0.1*(tem-25.0)) / (1.0+exp(1.3*(tem-55.0)))
+
     while(1):
-        tar_p = 0.5 * (max_p+min_p)
-        vmax = GetPhotosyntheticVcmax(v25,tem)
-        jmax = GetPhotosyntheticJmax(j25,tem)
-        j = GetPhotosyntheticJ(jmax,par)
-        kc = 41.01637 * 2.1**(0.1*(tem-25.0))
-        ko = 28201.92 * 1.2**(0.1*(tem-25.0))
-        km = kc * (1.0+21000.0/ko)
-        aj = j * (tar_p-gamma) / (4.0*(tar_p+2*gamma))
-        ac = vmax * (tar_p-gamma) / (tar_p+km)
-        af = (aj + ac - sqrt((aj+ac)**2.0 - 4*adjust*aj*ac) ) / adjust * 0.5
-        af = af - r_day
-        #af = min(aj,ac) - r_day
-        tmp_g = af / (ca-tar_p)
+        tar_ci = 0.5 * (max_ci + min_ci)
+        af = get_a(v25, j25, gamma, tar_ci, tem, par)
+
+        tmp_g = af / (ca-tar_ci)
         if(abs(tmp_g-gc)/gc < 1E-12):
             tar_a = af
             break
         elif(tmp_g<gc):
-            min_p = tar_p
+            min_ci = tar_ci
         else:
-            max_p = tar_p
-        if(abs(max_p-min_p) < 1E-12):
+            max_ci = tar_ci
+        if(abs(max_ci - min_ci) < 1E-12):
             tar_a = af
             break
-    return [tar_p, tar_a]
+    return [tar_ci, tar_a]
