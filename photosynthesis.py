@@ -65,21 +65,22 @@ def get_a_ci(v25,j25,gamma,gc,ca,tem,par):
     tar_a  = 0.0
     max_ci  = ca
     min_ci  = gamma
-    adjust = 0.98
 
-    while(1):
+    while True:
         tar_ci = 0.5 * (max_ci + min_ci)
         af = get_a(v25, j25, gamma, tar_ci, tem, par)
 
-        tmp_g = af / (ca-tar_ci)
-        if(abs(tmp_g-gc)/gc < 1E-12):
+        tmp_g = af / (ca - tar_ci)
+        if (abs(tmp_g - gc) / gc < 1E-12):
             tar_a = af
             break
-        elif(tmp_g<gc):
+        elif (tmp_g < gc):
             min_ci = tar_ci
         else:
             max_ci = tar_ci
-        if(abs(max_ci - min_ci) < 1E-12):
+
+        if (abs(max_ci - min_ci) < 1E-12):
             tar_a = af
             break
-    return [tar_ci, tar_a]
+
+    return tar_ci, tar_a
