@@ -157,6 +157,9 @@ class ProfitMax(object):
             optimised p_leaf (really total plant), MPa
 
         """
+        # press doesn't vary, so just use first value to convert mol to Pa
+        gc_conv = 1.0 / met.press[0] * cons.KPA_2_PA
+
         e_crit = self.get_e_crit(psi_soil) # kg H2O 30 min-1 m-2 (basal area)
         de = 1.0
 
@@ -179,7 +182,7 @@ class ProfitMax(object):
             # assume perfect coupling
             gh = emol / vpd * press # mol H20 m-2 s-1
             gc = gh * cons.GSW_2_GSC
-            g = gc * 10. # still not sure what this conversion does...
+            g = gc * gc_conv # convert to Pa
 
             c,a = get_a_ci(self.vcmax, self.jmax, 2.5, g, ca, tair, par)
             e_de = e + de

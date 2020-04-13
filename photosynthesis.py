@@ -70,7 +70,7 @@ def get_a_ci(v25,j25,gamma,gc,ca,tem,par):
         tar_ci = 0.5 * (max_ci + min_ci)
         af = get_a(v25, j25, gamma, tar_ci, tem, par)
 
-        tmp_g = af / (ca - tar_ci)
+        tmp_g = af / (ca - tar_ci) # Pa
         if (abs(tmp_g - gc) / gc < 1E-12):
             tar_a = af
             break
