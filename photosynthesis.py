@@ -65,13 +65,15 @@ def get_a_ci(v25,j25,gamma,gc,ca,tem,par):
     tar_a  = 0.0
     max_ci  = ca
     min_ci  = gamma
-
+    eps = 1e-12
+    
     while True:
         tar_ci = 0.5 * (max_ci + min_ci)
         af = get_a(v25, j25, gamma, tar_ci, tem, par)
 
         tmp_g = af / (ca - tar_ci) # Pa
-        if (abs(tmp_g - gc) / gc < 1E-12):
+
+        if abs(tmp_g - gc)/(gc + eps) < 1E-12:
             tar_a = af
             break
         elif (tmp_g < gc):

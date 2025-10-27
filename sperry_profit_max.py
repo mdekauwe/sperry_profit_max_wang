@@ -24,7 +24,7 @@ import sys
 
 class ProfitMax(object):
 
-    def __init__(self, sw0=0.5, psi_e=-0.8*cons.KPA_2_MPA, theta_sat=0.5, b=6.,
+    def __init__(self, sw0=0.5, psi_e=-0.8, theta_sat=0.5, b=6.,
                  soil_depth=1.0, ground_area=1.0, met_timestep=30.,
                  vcmax=61.74, jmax=111.13, laba=1000.0):
 
@@ -329,6 +329,7 @@ class ProfitMax(object):
         sw : float
             new volumetric soil water (m3 m-3)
         """
+        """
         loss = water_loss * cons.MMOL_2_MOL * cons.MOL_WATER_2_G_WATER * \
                 cons.G_TO_KG * self.timestep_sec
         delta_sw = (precip * self.timestep_sec) - loss
@@ -338,14 +339,25 @@ class ProfitMax(object):
         sw = max(sw, 0.0)
 
         return sw
+        """
+        loss_kg = water_loss * 1e-3 * 0.018 * self.timestep_sec
+        precip_kg = precip * self.timestep_sec
+        delta_sw = (precip_kg - loss_kg) / (self.soil_depth * 1000)
+        sw = sw_prev + delta_sw
+        return np.clip(sw, 0.0, self.theta_sat)
+
 
 if __name__ == "__main__":
 
     time_step = 30
     lat = -35.76
     lon = 148.0
+
+
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=1,
                             lat=lat, lon=lon, time_step=time_step)
+
+
 
     # Convert to Pa
     met.Ca *= cons.umol_to_mol * met.press * cons.KPA_2_PA
