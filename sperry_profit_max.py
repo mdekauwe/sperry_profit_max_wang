@@ -158,7 +158,7 @@ class ProfitMax(object):
 
         """
         # press doesn't vary, so just use first value to convert mol to Pa
-        gc_conv = 1.0 / met.press[0] * cons.KPA_2_PA
+        gc_conv = 1.0 / press * cons.KPA_2_PA
 
         e_crit = self.get_e_crit(psi_soil) # kg H2O 30 min-1 m-2 (basal area)
         de = 1.0
@@ -357,7 +357,7 @@ if __name__ == "__main__":
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=1,
                             lat=lat, lon=lon, time_step=time_step)
 
-    
+
 
     # Convert to Pa
     met.Ca *= cons.umol_to_mol * met.press * cons.KPA_2_PA
