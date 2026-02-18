@@ -37,7 +37,11 @@ def generate_met_data(year=2000, PPFDmax=2000, RH=30, Tmax=30, Tmin=10,
     r = np.arange(0, (24 * 60 - time_step) + time_step, time_step)
     p = np.zeros(len(r))
     ta = np.zeros(len(r))
-    ii = np.argwhere((r > (sunrise*60)) & (r <= (sunrise*60 + day_length*60)))
+    #ii = np.argwhere((r > (sunrise*60)) & (r <= (sunrise*60 + day_length*60)))
+
+    # convert to 1D array before taking max/min
+    ii = np.argwhere((r > (sunrise*60)) & (r <= (sunrise*60 + day_length*60))).flatten()
+
     relt = (r[ii] - sunrise * 60) / float(day_length * 60)
     p[ii] = generate_par(relt, PPFDmax)
 
